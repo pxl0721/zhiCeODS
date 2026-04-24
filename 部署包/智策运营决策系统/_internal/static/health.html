@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业运营评估 · 智策</title>
+    <link rel="stylesheet" href=".\assets\css\all.min.css">
+    <style>
+        /* ===== 全局背景（深色，保留原有风格） ===== */
+        body {
+            background: url('./static/images/bg4.jpg') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #2c3e50;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* ===== 白色导航栏（与首页一致） ===== */
+        .navbar-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 0 32px;
+        }
+
+        .navbar {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            position: relative;
+        }
+
+        .nav-logo {
+            font-weight: 600;
+            font-size: 1.3rem;
+            color: #1a1a1e;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+
+        .nav-logo i { color: #3b82f6; }
+
+        .nav-links-container {
+            position: relative;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+            position: relative;
+        }
+
+        .nav-item {
+            position: relative;
+            transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1);
+            transform: scale(1);
+            will-change: transform;
+        }
+
+        .nav-item a {
+            text-decoration: none;
+            color: #1a1a1e;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 8px 0;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .nav-item a:hover { color: #3b82f6; }
+        .nav-item.active a { color: #3b82f6; }
+
+        .nav-indicator {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            height: 2px;
+            background: #3b82f6;
+            border-radius: 2px;
+            transition: left 0.3s ease, width 0.3s ease;
+            pointer-events: none;
+        }
+
+        .nav-right a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #3b82f6;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-right a:hover {
+            background: #3b82f6;
+            color: #ffffff;
+        }
+
+        /* ===== 主内容区（深色毛玻璃） ===== */
+        .main-content {
+            flex: 1;
+            padding: 32px 40px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .page-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .page-title p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 4px;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: rgba(74, 108, 247, 0.9);
+            backdrop-filter: blur(8px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            background: rgba(74, 108, 247, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ===== 健康评估卡片 ===== */
+        .health-card {
+            background: rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(15px) !important;
+            -webkit-backdrop-filter: blur(15px) !important;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            color: white;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .health-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(#a0b4ff 0deg 252deg, rgba(255, 255, 255, 0.2) 252deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 32px;
+            position: relative;
+        }
+
+        .score-inner {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(20, 30, 45, 0.4);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .score-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        .score-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .dimension-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .dimension-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dimension-card h3 {
+            color: white;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .dimension-score {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #a0b4ff;
+            margin-bottom: 8px;
+        }
+
+        .dimension-meta {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+        }
+
+        .ai-comment {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            margin-top: 24px;
+        }
+
+        .ai-comment h3 {
+            color: white;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-comment p {
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* 加载动画 */
+        .loader-area {
+            text-align: center;
+            padding: 60px;
+            color: white;
+        }
+
+        .loader-area i {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        footer {
+            margin-top: 48px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 24px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .nav-links { gap: 20px; }
+            .main-content { padding: 24px 16px; }
+            .dimension-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 白色导航栏 -->
+    <div class="navbar-wrapper">
+        <div class="navbar">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-cube"></i>
+                <span>智策</span>
+            </a>
+            <div class="nav-links-container">
+                <ul class="nav-links" id="navLinks">
+                    <li class="nav-item" data-page="home"><a href="/">首页</a></li>
+                    <li class="nav-item" data-page="dashboard"><a href="/dashboard.html">仪表盘</a></li>
+                    <li class="nav-item" data-page="datasource"><a href="/datasource.html">数据源</a></li>
+                    <li class="nav-item" data-page="health"><a href="/health.html">运营评估</a></li>
+                    <li class="nav-item" data-page="risks"><a href="/risks.html">风险机会</a></li>
+                    <li class="nav-item" data-page="report"><a href="/generate_report.html">生成报告</a></li>
+                    <li class="nav-item" data-page="settings"><a href="/settings.html">设置</a></li>
+                </ul>
+                <div class="nav-indicator" id="navIndicator"></div>
+            </div>
+            <div class="nav-right">
+                <a href="/dashboard.html">进入系统 →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header-bar">
+            <div class="page-title">
+                <h1>企业运营评估</h1>
+                <p>综合健康度评分与 AI 专业诊断</p>
+            </div>
+            <a href="/dashboard.html" class="btn-primary">
+                <i class="fas fa-arrow-left"></i> 返回仪表盘
+            </a>
+        </div>
+
+        <!-- 加载提示 -->
+        <div id="loadingArea" class="loader-area">
+            <i class="fas fa-spinner fa-pulse"></i>
+            <p>正在分析数据，请稍候...</p>
+        </div>
+
+        <!-- 评估结果区域（初始隐藏） -->
+        <div id="contentArea" style="display: none;">
+            <div class="health-card">
+                <!-- 综合得分圆环 -->
+                <div class="score-circle" id="scoreCircle">
+                    <div class="score-inner">
+                        <div class="score-value" id="totalScore">--</div>
+                        <div class="score-label">综合得分</div>
+                    </div>
+                </div>
+
+                <!-- 维度卡片 -->
+                <div class="dimension-grid" id="dimensionsContainer"></div>
+
+                <!-- AI 诊断 -->
+                <div class="ai-comment" id="aiCommentContainer"></div>
+            </div>
+        </div>
+
+        <footer>
+            <div>智策团队 · 中国大学生计算机设计大赛</div>
+            <div style="font-size: 0.8rem; margin-top: 6px;">© 2025 智策 AI 运营决策系统</div>
+        </footer>
+    </div>
+
+    <script>
+        (function(){
+            // ---------- 导航栏交互（与首页相同） ----------
+            const navLinks = document.getElementById('navLinks');
+            const navItems = document.querySelectorAll('.nav-item');
+            const indicator = document.getElementById('navIndicator');
+
+            function updateIndicator() {
+                const activeItem = document.querySelector('.nav-item.active');
+                if (activeItem) {
+                    const linkRect = activeItem.querySelector('a').getBoundingClientRect();
+                    const containerRect = navLinks.getBoundingClientRect();
+                    indicator.style.width = `${linkRect.width}px`;
+                    indicator.style.left = `${linkRect.left - containerRect.left}px`;
+                }
+            }
+
+            function setActiveByPage() {
+                const path = window.location.pathname;
+                let activePage = 'health';
+                if (path.includes('dashboard')) activePage = 'dashboard';
+                else if (path.includes('datasource')) activePage = 'datasource';
+                else if (path.includes('risks')) activePage = 'risks';
+                else if (path.includes('generate_report')) activePage = 'report';
+                else if (path === '/' || path.includes('index')) activePage = 'home';
+                
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.dataset.page === activePage) {
+                        item.classList.add('active');
+                    }
+                });
+                updateIndicator();
+            }
+
+            function handleHover(e) {
+                const targetItem = e.currentTarget;
+                const items = Array.from(navItems);
+                const index = items.indexOf(targetItem);
+                items.forEach((item, i) => {
+                    if (i === index) {
+                        item.style.transform = 'scale(1.08)';
+                    } else if (Math.abs(i - index) === 1) {
+                        item.style.transform = 'scale(0.95)';
+                    } else {
+                        item.style.transform = 'scale(1)';
+                    }
+                });
+            }
+
+            function resetScale() {
+                navItems.forEach(item => item.style.transform = 'scale(1)');
+            }
+
+            navItems.forEach(item => {
+                item.addEventListener('mouseenter', handleHover);
+                item.addEventListener('mouseleave', resetScale);
+                item.addEventListener('click', function(e) {
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    updateIndicator();
+                });
+            });
+
+            setActiveByPage();
+            window.addEventListener('resize', updateIndicator);
+            window.addEventListener('load', updateIndicator);
+
+            // ---------- 健康评估页面原有逻辑 ----------
+            function initScrollAnimations() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                document.querySelectorAll('.health-card').forEach(el => observer.observe(el));
+            }
+
+            async function loadHealthAssessment() {
+                try {
+                    const response = await fetch('/api/health_assessment');
+                    const data = await response.json();
+
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    document.getElementById('loadingArea').style.display = 'none';
+                    document.getElementById('contentArea').style.display = 'block';
+
+                    const totalScore = data.total_score;
+                    document.getElementById('totalScore').innerText = totalScore;
+                    const deg = (totalScore / 100) * 360;
+                    document.getElementById('scoreCircle').style.background = 
+                        `conic-gradient(#a0b4ff 0deg ${deg}deg, rgba(255, 255, 255, 0.2) ${deg}deg 360deg)`;
+
+                    const dims = data.dimensions;
+                    const metrics = data.metrics;
+                    const dimensionsHtml = `
+                        <div class="dimension-card">
+                            <h3><i class="fas fa-coins"></i> 盈利能力</h3>
+                            <div class="dimension-score">${dims.profitability}</div>
+                            <div class="dimension-meta">利润率 ${metrics.avg_margin}%</div>
+                        </div>
+                        <div class="dimension-card">
+                            <h3><i class="fas fa-chart-line"></i> 增长潜力</h3>
+                            <div class="dimension-score">${dims.growth_potential}</div>
+                            <div class="dimension-meta">销售环比 ${metrics.sales_growth > 0 ? '+' : ''}${metrics.sales_growth}%</div>
+                        </div>
+                        <div class="dimension-card">
+                            <h3><i class="fas fa-trend-up"></i> 利润增长</h3>
+                            <div class="dimension-score">${dims.profit_growth}</div>
+                            <div class="dimension-meta">利润环比 ${metrics.profit_growth > 0 ? '+' : ''}${metrics.profit_growth}%</div>
+                        </div>
+                    `;
+                    document.getElementById('dimensionsContainer').innerHTML = dimensionsHtml;
+
+                    document.getElementById('aiCommentContainer').innerHTML = `
+                        <h3><i class="fas fa-robot"></i> AI 专业诊断</h3>
+                        <p>${data.ai_comment.replace(/\n/g, '<br>')}</p>
+                    `;
+
+                    initScrollAnimations();
+
+                } catch (error) {
+                    document.getElementById('loadingArea').innerHTML = `
+                        <div style="color: #fca5a5;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>加载失败：${error.message || '请稍后重试'}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            window.onload = () => {
+                loadHealthAssessment();
+            };
+        })();
+    </script>
+</body>
+</html>

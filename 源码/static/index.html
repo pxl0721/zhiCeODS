@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智策 · 企业运营决策支持</title>
+    <link rel="stylesheet" href="https://lib.baomitu.com/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #fff;
+            color: #1f1f1f;
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* 导航栏 */
+        .navbar-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 0 32px;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            position: relative;
+        }
+
+        .nav-logo {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #1f1f1f;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-logo i { color: #3b82f6; }
+
+        .nav-links-container { position: relative; }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+            position: relative;
+        }
+
+        .nav-item {
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-item a {
+            text-decoration: none;
+            color: #555;
+            font-size: 0.9rem;
+            font-weight: 400;
+            padding: 8px 0;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .nav-item a:hover { color: #3b82f6; }
+        .nav-item.active a { color: #3b82f6; font-weight: 500; }
+
+        .nav-indicator {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            height: 2px;
+            background: #3b82f6;
+            border-radius: 2px;
+            transition: left 0.3s ease, width 0.3s ease;
+            pointer-events: none;
+        }
+
+        .nav-right a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #3b82f6;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .nav-right a:hover {
+            background: #3b82f6;
+            color: #ffffff;
+        }
+
+        /* 通用布局容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* 全新 Hero 区 (Ant Design Landing 风格) */
+        .hero {
+            position: relative;
+            width: 100%;
+            min-height: 580px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: url('/static/images/1776925150725_edit_443414614426057.jpg') no-repeat center center;
+            background-size: cover;
+            color: #fff;
+            margin-top: -1px; /* 消除可能的间隙 */
+        }
+
+        /* 深色遮罩，保证文字可读 */
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 60px 32px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            color: #fff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 48px;
+            font-weight: 400;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 14px 36px;
+            border-radius: 30px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 1rem;
+            box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+            border: none;
+        }
+
+        .cta-button:hover {
+            background: #2563eb;
+            transform: scale(1.02);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.4);
+        }
+
+        .outline-button {
+            display: inline-block;
+            background: transparent;
+            color: white;
+            padding: 14px 36px;
+            border-radius: 30px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .outline-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #fff;
+        }
+
+        /* 功能介绍区 (幕布风格保留) */
+        .feature-section {
+            padding: 80px 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-grid {
+            display: flex;
+            align-items: center;
+            gap: 80px;
+        }
+
+        .feature-grid.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-content h2 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1f1f1f;
+        }
+
+        .feature-content p {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .feature-tag {
+            background: #f5f5f7;
+            color: #444;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .feature-tag:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .feature-visual {
+            flex: 1;
+            background: #fafafc;
+            border-radius: 32px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+        }
+
+        .feature-visual img {
+            width: 100%;
+            height: auto;
+            max-height: 280px;
+            object-fit: contain;
+            border-radius: 12px;
+            display: block;
+        }
+
+        /* 特性卡片区 */
+        .capability-section {
+            padding: 80px 0;
+            background: #fafafc;
+            border-radius: 40px 40px 0 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1f1f1f;
+        }
+
+        .section-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .capability-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .capability-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .capability-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 30px -10px rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            color: #3b82f6;
+            margin-bottom: 24px;
+        }
+
+        .capability-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1f1f1f;
+        }
+
+        .capability-card p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* 底部页脚 */
+        .footer {
+            padding: 40px 0;
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            margin-top: 40px;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .nav-links { gap: 16px; }
+            .navbar { padding: 0 16px; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero-subtitle { font-size: 1rem; }
+            .feature-grid, .feature-grid.reverse {
+                flex-direction: column;
+                gap: 40px;
+            }
+            .capability-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div class="navbar-wrapper">
+        <div class="navbar">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-cube"></i>
+                <span>智策</span>
+            </a>
+            <div class="nav-links-container">
+                <ul class="nav-links" id="navLinks">
+                    <li class="nav-item" data-page="home"><a href="/">首页</a></li>
+                    <li class="nav-item" data-page="dashboard"><a href="/dashboard.html">仪表盘</a></li>
+                    <li class="nav-item" data-page="datasource"><a href="/datasource.html">数据源</a></li>
+                    <li class="nav-item" data-page="health"><a href="/health.html">运营评估</a></li>
+                    <li class="nav-item" data-page="risks"><a href="/risks.html">风险机会</a></li>
+                    <li class="nav-item" data-page="report"><a href="/generate_report.html">生成报告</a></li>
+                    <li class="nav-item" data-page="settings"><a href="/settings.html">设置</a></li>
+                </ul>
+                <div class="nav-indicator" id="navIndicator"></div>
+            </div>
+            <div class="nav-right">
+                <a href="/dashboard.html">进入系统 →</a>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <!-- 全新 Hero 区 (Ant Design Landing 风格 + 背景图) -->
+        <section class="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-bolt"></i> AI Agent 驱动 · 实时决策
+                </div>
+                <h1>
+                    智能体赋能的企业运营<br>
+                    分析与决策支持系统
+                </h1>
+                <div class="hero-subtitle">
+                    基于通义千问大模型，将企业运营数据转化为可执行的洞察。
+                    自然语言问答、自动风险评估、智能报告生成，一切尽在智策。
+                </div>
+                <div class="hero-buttons">
+                    <a href="/dashboard.html" class="cta-button">开始体验</a>
+                    <a href="#" class="outline-button" id="learnMoreBtn">了解更多 →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能1: 智能问数 (左文右图) -->
+        <section class="feature-section">
+            <div class="container">
+                <div class="feature-grid">
+                    <div class="feature-content">
+                        <h2>智能问数 · 对话即分析</h2>
+                        <p>告别复杂的报表和SQL。只需像与人对话一样提问，AI Agent 即刻理解意图，自动分析数据并返回可视化图表。让数据洞察，从未如此简单。</p>
+                        <div class="feature-tags">
+                            <span class="feature-tag">自然语言查询</span>
+                            <span class="feature-tag">趋势分析</span>
+                            <span class="feature-tag">归因分析</span>
+                            <span class="feature-tag">图表联动</span>
+                        </div>
+                    </div>
+                    <div class="feature-visual">
+                        <img src="/static/images/创意发散.jpg" alt="智能问数 · 创意发散" onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能2: 健康评估 (右文左图) -->
+        <section class="feature-section">
+            <div class="container">
+                <div class="feature-grid reverse">
+                    <div class="feature-content">
+                        <h2>健康评估 · 360° 量化诊断</h2>
+                        <p>从盈利能力、增长潜力到利润增长，多维度量化企业运营健康度。AI 战略顾问为你解读得分背后的深层含义，并提供具体改进建议。</p>
+                        <div class="feature-tags">
+                            <span class="feature-tag">综合健康度评分</span>
+                            <span class="feature-tag">维度得分</span>
+                            <span class="feature-tag">环比增长</span>
+                            <span class="feature-tag">AI 诊断</span>
+                        </div>
+                    </div>
+                    <div class="feature-visual">
+                        <img src="/static/images/调整广告计划.jpg" alt="健康评估 · 调整计划" onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能3: 风险机会洞察 (左文右图) -->
+        <section class="feature-section">
+            <div class="container">
+                <div class="feature-grid">
+                    <div class="feature-content">
+                        <h2>风险机会 · 洞察先机</h2>
+                        <p>系统自动扫描运营数据，精准识别销售额骤降、利润率波动等潜在风险，同时捕捉增长信号。AI 为你排定优先级，告诉你下一步该关注哪里。</p>
+                        <div class="feature-tags">
+                            <span class="feature-tag">异常检测</span>
+                            <span class="feature-tag">机会识别</span>
+                            <span class="feature-tag">优先级建议</span>
+                            <span class="feature-tag">实时预警</span>
+                        </div>
+                    </div>
+                    <div class="feature-visual">
+                        <img src="/static/images/拍摄视频.jpg" alt="风险机会 · 拍摄准备" onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能4: 自动报告 (右文左图) -->
+        <section class="feature-section">
+            <div class="container">
+                <div class="feature-grid reverse">
+                    <div class="feature-content">
+                        <h2>自动报告 · 一键生成</h2>
+                        <p>无需手动整理数据、编写汇报PPT。AI 自动撰写结构清晰、语言专业的运营分析报告，支持下载与分享，让你的工作成果一目了然。</p>
+                        <div class="feature-tags">
+                            <span class="feature-tag">一键生成</span>
+                            <span class="feature-tag">专业排版</span>
+                            <span class="feature-tag">数据可视化</span>
+                            <span class="feature-tag">下载分享</span>
+                        </div>
+                    </div>
+                    <div class="feature-visual">
+                        <img src="/static/images/思考.jpg" alt="自动报告 · 深度思考" onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心能力卡片区 -->
+        <section class="capability-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>覆盖运营全流程的智能平台</h2>
+                    <p>从数据接入到决策输出，一站式 AI 驱动</p>
+                </div>
+                <div class="capability-grid">
+                    <div class="capability-card">
+                        <div class="card-icon"><i class="fas fa-database"></i></div>
+                        <h3>动态数据接入</h3>
+                        <p>支持上传自定义 CSV 数据，智能体即时适配。同时支持数据库、API 等多种数据源接入。</p>
+                    </div>
+                    <div class="capability-card">
+                        <div class="card-icon"><i class="fas fa-robot"></i></div>
+                        <h3>AI 智能体协同</h3>
+                        <p>基于通义千问大模型，多智能体协同工作，自主完成数据查询、分析、归因与报告生成。</p>
+                    </div>
+                    <div class="capability-card">
+                        <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h3>多端决策同步</h3>
+                        <p>Web 端实时访问，决策结论支持一键分发，确保团队成员信息同步，快速响应市场变化。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div>智策团队 · 中国大学生计算机设计大赛</div>
+            <div style="margin-top: 8px;">© 2025 智策 AI 运营决策系统</div>
+        </div>
+    </footer>
+
+    <script>
+        (function(){
+            // 导航栏交互逻辑
+            const navLinks = document.getElementById('navLinks');
+            const navItems = document.querySelectorAll('.nav-item');
+            const indicator = document.getElementById('navIndicator');
+
+            function updateIndicator() {
+                const activeItem = document.querySelector('.nav-item.active');
+                if (activeItem) {
+                    const linkRect = activeItem.querySelector('a').getBoundingClientRect();
+                    const containerRect = navLinks.getBoundingClientRect();
+                    indicator.style.width = `${linkRect.width}px`;
+                    indicator.style.left = `${linkRect.left - containerRect.left}px`;
+                }
+            }
+
+            function setActiveByPage() {
+                const path = window.location.pathname;
+                let activePage = 'home';
+                if (path.includes('dashboard')) activePage = 'dashboard';
+                else if (path.includes('datasource')) activePage = 'datasource';
+                else if (path.includes('health')) activePage = 'health';
+                else if (path.includes('risks')) activePage = 'risks';
+                else if (path.includes('generate_report')) activePage = 'report';
+                else if (path.includes('settings')) activePage = 'settings';
+                
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.dataset.page === activePage) {
+                        item.classList.add('active');
+                    }
+                });
+                updateIndicator();
+            }
+
+            function handleHover(e) {
+                const targetItem = e.currentTarget;
+                const items = Array.from(navItems);
+                const index = items.indexOf(targetItem);
+                items.forEach((item, i) => {
+                    if (i === index) item.style.transform = 'scale(1.05)';
+                    else item.style.transform = 'scale(1)';
+                });
+            }
+
+            function resetScale() {
+                navItems.forEach(item => item.style.transform = 'scale(1)');
+            }
+
+            navItems.forEach(item => {
+                item.addEventListener('mouseenter', handleHover);
+                item.addEventListener('mouseleave', resetScale);
+                item.addEventListener('click', function(e) {
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    updateIndicator();
+                });
+            });
+
+            setActiveByPage();
+            window.addEventListener('resize', updateIndicator);
+            window.addEventListener('load', updateIndicator);
+
+            // 了解更多按钮
+            const learnMoreBtn = document.getElementById('learnMoreBtn');
+            if (learnMoreBtn) {
+                learnMoreBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = '/dashboard.html';
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
